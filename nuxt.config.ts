@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { defineNuxtConfig } from 'nuxt/config'
+
 export default defineNuxtConfig({
   app: {
     head: {
@@ -16,9 +18,7 @@ export default defineNuxtConfig({
   css: ['@/assets/css/tailwind.css'],
   components: true,
 
-  modules: [
-    // 'vue-sweetalert2/nuxt'
-  ],
+  modules: ['@pinia/nuxt'],
 
   build: {
     transpile: [
