@@ -35,3 +35,7 @@ header a:not(.router-link-exact-active) span.nav {
 header a.router-link-exact-active span.nav {
   @apply decoration-solid decoration-from-font underline underline-offset-2;
 }
+
+#swal2-html-container {
+  @apply !flex flex-col;
+}

@@ -18,7 +18,7 @@ export default defineNuxtConfig({
   css: ['@/assets/css/tailwind.css'],
   components: true,
 
-  modules: ['@pinia/nuxt'],
+  modules: ['@pinia/nuxt', '@nuxt/image-edge'],
 
   build: {
     transpile: [

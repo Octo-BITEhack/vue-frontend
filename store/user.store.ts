@@ -6,6 +6,19 @@ export const useUserStore = defineStore('user-store', () => {
   const isHelmetClosed = ref<boolean>(false)
   const isBeerBeingDrank = ref<boolean>(false)
 
+  async function login(username: string, password: string): Promise<boolean> {
+    const response = await $fetch('/api/login', {
+      method: 'POST',
+      body: { username, password }
+    })
+
+    if (response.ok) {
+      setName(username)
+    }
+
+    return response.ok
+  }
+
   function setName(newName: string) {
     name.value = newName
   }
@@ -22,7 +35,7 @@ export const useUserStore = defineStore('user-store', () => {
     name,
     isHelmetClosed,
     isBeerBeingDrank,
-    setName,
+    login,
     toggleHelmet,
     setBeerDrinking
   }
