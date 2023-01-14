@@ -6,9 +6,9 @@
       <nuxt-img :src="`/img/${image}.png`" height="64" width="64" />
     </lazy-client-only>
     <div>
-      <span class="capitalize lg:w-52 block"
-        >{{ texts[image] }}: <strong>{{ value }}</strong></span
-      >
+      <span class="capitalize lg:w-52 block">
+        {{ texts[image] }}: <strong>{{ value }}</strong>
+      </span>
     </div>
   </div>
 </template>
@@ -38,7 +38,12 @@ export default {
     return {
       texts: {
         puls: 'Puls',
-        wilgotnosc: 'Wilgotność'
+        wilgotnosc: 'Wilgotność',
+        natlenienie: 'Natlenienie',
+        cisnienie: 'Ciśnienie',
+        glosnosc: 'Głośność',
+        jasnosc: 'Jasność',
+        temperatura: 'Temperatura'
       } as { [key: string]: string }
     }
   }

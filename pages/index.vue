@@ -45,7 +45,7 @@ export default {
           html:
             '<input type="text" id="swal-input1" name="swal-input1" class="swal2-input" placeholder="Nazwa użytkownika..." required />' +
             '<label for="swal-input1" class="swal2-label text-sm text-gray-400">Podaj swoją nazwę użytkownika</label>' +
-            '<input type="text" id="swal-input2" name="swal-input2" class="swal2-input" placeholder="Hasło..." required />' +
+            '<input type="password" id="swal-input2" name="swal-input2" class="swal2-input" placeholder="Hasło..." required />' +
             '<label for="swal-input2" class="swal2-label text-sm text-gray-400">Podaj swoje hasło</label>',
           closeOnClickOutside: false,
           closeOnEsc: false,
