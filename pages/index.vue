@@ -16,7 +16,8 @@ export default {
       images: ['puls', 'natlenienie', 'glosnosc', 'jasnosc'],
       value: 100,
       maxValue: 120,
-      color: 'bg-blue-400'
+      color: 'bg-blue-400',
+      unit: ''
     }
   },
   head() {

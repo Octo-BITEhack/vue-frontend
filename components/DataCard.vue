@@ -22,7 +22,7 @@ export default {
       required: true
     },
     value: {
-      type: Number,
+      type: Number || String,
       required: true
     },
     maxValue: {
@@ -30,6 +30,10 @@ export default {
       required: true
     },
     color: {
+      type: String,
+      required: true
+    },
+    unit: {
       type: String,
       required: true
     }
