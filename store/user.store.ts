@@ -3,6 +3,7 @@ import { ref } from 'vue'
 
 export const useUserStore = defineStore('user-store', () => {
   const name = ref<string>('')
+  const token = ref<string>('')
   const isHelmetClosed = ref<boolean>(false)
   const isBeerBeingDrank = ref<boolean>(false)
 
@@ -14,9 +15,15 @@ export const useUserStore = defineStore('user-store', () => {
 
     if (response.ok) {
       setName(username)
+      setToken(response.body.token)
     }
 
     return response.ok
+  }
+
+  function logout() {
+    setName('')
+    setToken('')
   }
 
   function setName(newName: string) {
@@ -31,12 +38,22 @@ export const useUserStore = defineStore('user-store', () => {
     isBeerBeingDrank.value = newIsBeerBeingDrank
   }
 
+  function setToken(newToken: string) {
+    token.value = newToken
+  }
+
+  function getToken() {
+    return token.value
+  }
+
   return {
     name,
     isHelmetClosed,
     isBeerBeingDrank,
     login,
+    logout,
     toggleHelmet,
-    setBeerDrinking
+    setBeerDrinking,
+    getToken
   }
 })

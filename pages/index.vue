@@ -1,24 +1,55 @@
 <script>
 import AlarmNumbers from '@/components/AlarmNumbers.vue'
 import DataCard from '@/components/DataCard.vue'
+import { useStatsStore } from '@/store/stats.store'
 import { useUserStore } from '@/store/user.store'
 
 export default {
-  components: { DataCard },
+  components: { DataCard, AlarmNumbers },
   setup() {
-    const store = useUserStore()
+    const statsStore = useStatsStore()
+    const userStore = useUserStore()
 
     return {
-      store
+      statsStore,
+      userStore
     }
   },
-  data: function data() {
+  data() {
     return {
-      images: ['puls', 'natlenienie', 'glosnosc', 'jasnosc'],
-      value: 100,
-      maxValue: 120,
-      color: 'bg-blue-400',
-      unit: '',
+      data: [
+        {
+          id: 0,
+          image: 'puls',
+          text: 'Puls',
+          value: 100,
+          maxValue: 120,
+          unit: 'ud./min'
+        },
+        {
+          id: 1,
+          image: 'jasnosc',
+          text: 'Jest jasno?',
+          value: 1,
+          minValue: 0
+        },
+        {
+          id: 2,
+          image: 'glosnosc',
+          text: 'Jest głośno?',
+          value: 1,
+          maxValue: 1
+        },
+        {
+          id: 3,
+          image: 'natlenienie',
+          text: 'Natlenienie',
+          value: 100,
+          minValue: 80,
+          unit: '%'
+        }
+      ],
+      interval: null,
       mobiles: ['999 - Pogotowie', '997 - Policja', '998 - Straż pożarna']
     }
   },
@@ -76,7 +107,7 @@ export default {
 
         if (!isConfirmed) continue
 
-        areCredentialsValid = await this.store.login(username, password)
+        areCredentialsValid = await this.userStore.login(username, password)
       } catch (e) {
         console.error(e)
         await this.$swal.fire({
@@ -98,23 +129,47 @@ export default {
     }
 
     this.$swal.fire({
-      title: `Witaj, ${this.store.name}!`,
+      title: `Witaj, ${this.userStore.name}!`,
       icon: 'success',
       timer: 2000
     })
+
+    this.interval = setInterval(async () => {
+      console.info('Fetching stats...')
+
+      try {
+        const stats = await this.statsStore.fetchStats()
+
+        if (stats instanceof Error) throw stats
+      } catch (e) {
+        console.error(e)
+        clearInterval(this.interval)
+
+        await this.$swal.fire({
+          title: 'Wystąpił błąd podczas pobierania danych',
+          text: e.message,
+          icon: 'error'
+        })
+
+        // location.reload()
+      }
+    }, 3000)
+  },
+  beforeUnmount() {
+    this.userStore.logout()
   },
   methods: {
     onHelmetButtonClick() {
-      this.store.toggleHelmet()
+      this.userStore.toggleHelmet()
     },
     onBeerButtonTouchDown() {
-      this.store.setBeerDrinking(true)
+      this.userStore.setBeerDrinking(true)
     },
     onBeerButtonTouchUp() {
-      this.store.setBeerDrinking(false)
+      this.userStore.setBeerDrinking(false)
     },
     toggleBeer() {
-      this.store.toggleBeer()
+      this.userStore.toggleBeer()
     }
   }
 }
@@ -123,9 +178,9 @@ export default {
 <template>
   <div class="container mx-auto flex items-center justify-center flex-col">
     <h1 class="text-5xl font-bold mt-4 mb-4 underline">
-      {{ store.name ? `Witaj, ${store.name}!` : 'Aby kontynuować, podaj swoje imię' }}
+      {{ userStore.name ? `Witaj, ${userStore.name}!` : 'Aby kontynuować, podaj swoje imię' }}
     </h1>
-    <div v-show="store.name" class="container flex flex-wrap lg:flex-row p-4">
+    <div v-show="userStore.name" class="container flex flex-wrap lg:flex-row p-4">
       <div class="w-full lg:w-1/3 mb-4 lg:pr-6">
         <h2 class="hidden text-2xl w-full mb-3 lg:block">Sterowanie</h2>
         <div class="flex flex-col gap-3">
@@ -133,7 +188,7 @@ export default {
             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg text-4xl lg:py-2 lg:px-4 lg:text-lg"
             @click="onHelmetButtonClick"
           >
-            {{ store.isHelmetClosed ? 'Otwórz' : 'Zamknij' }} hełm
+            {{ userStore.isHelmetClosed ? 'Otwórz' : 'Zamknij' }} hełm
           </button>
           <button
             class="bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-4 px-8 rounded-lg text-4xl lg:py-2 lg:px-4 lg:text-lg"
@@ -142,24 +197,27 @@ export default {
             @mousedown="onBeerButtonTouchDown"
             @mouseup="onBeerButtonTouchUp"
           >
-            {{ store.isBeerBeingDrank ? 'Puść, aby przestać pić' : 'Pij piwo' }}
+            {{ userStore.isBeerBeingDrank ? 'Puść, aby przestać pić' : 'Pij piwo' }}
           </button>
         </div>
       </div>
-      <hr class="mb-4 lg:hidden" />
+      <hr class="w-full mb-4 lg:hidden" />
       <div class="w-full lg:w-2/3 mx-auto flex flex-col lg:flex-row flex-wrap gap-3">
         <h2 class="hidden text-2xl w-full lg:block">Parametry</h2>
         <data-card
-          v-for="image in images"
-          :key="image"
-          :image="image"
-          :value="value"
-          :max-value="maxValue"
-          :color="color"
+          v-for="record in data"
+          :key="record.id"
+          :image="record.image"
+          :text="record.text"
+          :value="record.value"
+          :unit="record.unit || ''"
+          :max-value="record.maxValue || NaN"
+          :min-value="record.minValue || NaN"
         />
       </div>
-      <h2 class="hidden text-2xl w-full mt-10 lg:block">Znalazłeś się w ekstremalnej sytuacji?</h2>
-      <alarm-numbers v-for="mobile in mobiles" :key="mobile" :mobile="mobile" :value="value" />
+      <hr class="w-full mt-6 lg:mt-8" />
+      <h2 class="hidden text-2xl w-full mt-4 lg:mt-8 lg:block">Znalazłeś się w ekstremalnej sytuacji?</h2>
+      <alarm-numbers v-for="mobile in mobiles" :key="mobile" :mobile="mobile" />
     </div>
   </div>
 </template>
