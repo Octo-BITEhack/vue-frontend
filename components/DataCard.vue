@@ -38,12 +38,9 @@ export default {
     return {
       texts: {
         puls: 'Puls',
-        wilgotnosc: 'Wilgotność',
         natlenienie: 'Natlenienie',
-        cisnienie: 'Ciśnienie',
         glosnosc: 'Głośność',
-        jasnosc: 'Jasność',
-        temperatura: 'Temperatura'
+        jasnosc: 'Jasność'
       } as { [key: string]: string }
     }
   }

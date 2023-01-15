@@ -13,7 +13,7 @@ export default {
   },
   data: function data() {
     return {
-      images: ['puls', 'natlenienie', 'wilgotnosc', 'cisnienie', 'glosnosc', 'jasnosc', 'temperatura'],
+      images: ['puls', 'natlenienie', 'glosnosc', 'jasnosc'],
       value: 100,
       maxValue: 120,
       color: 'bg-blue-400'
