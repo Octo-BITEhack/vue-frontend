@@ -7,19 +7,12 @@ import { Stats } from '~~/@types/stats'
 import getDatumAndLabelFromStat from '~~/functions/getDatumAndLabelFromStat'
 
 export const useStatsStore = defineStore('stats-store', () => {
-  const data = ref<(Stats & { timestamp: Date })[]>([
-    // {
-    //   pulse: 0,
-    //   saturation: 0,
-    //   isNoise: false,
-    //   isLight: false,
-    //   timestamp: new Date()
-    // }
-  ])
+  const data = ref<(Stats & { timestamp: Date })[]>([])
   const labels = ref<{ [key: keyof Stats]: Date[] }>({})
   const datums = ref<{ [key: keyof Stats]: string[] }>({})
+  const chartKey = ref<number>(0)
 
-  async function fetchStats(): Promise<Stats | Error> {
+  async function fetchStats(): Promise<void | Error> {
     const userStore = useUserStore()
 
     const response = await $fetch('/api/stats', {
@@ -36,17 +29,19 @@ export const useStatsStore = defineStore('stats-store', () => {
     const { body } = response as ResponseStats
 
     appendStats({ ...body, timestamp: new Date() } as Stats & { timestamp: Date })
+    createLabelsAndDatums()
 
-    return { ...body }
+    // chartKey.value++
   }
 
   function appendStats(stats: Stats & { timestamp: Date }): void {
-    data.value.pop()
     data.value.push(stats)
-    createLabelsAndDatums()
   }
 
   function createLabelsAndDatums(): void {
+    labels.value = {}
+    datums.value = {}
+
     for (const value of data.value) {
       for (const key in value) {
         if (key === 'timestamp') {
@@ -67,6 +62,8 @@ export const useStatsStore = defineStore('stats-store', () => {
   }
 
   return {
+    chartKey,
+    data,
     labels,
     datums,
     fetchStats

@@ -1,6 +1,6 @@
 <template>
   <div class="chart-container h-64 w-full lg:w-[calc(50%_-_2rem)]">
-    <LineChart :id="id" :key="id" :data="chartData" :options="chartOptions" />
+    <LineChart :id="id" :key="store.chartKey" :data="{ datasets, labels }" :options="chartOptions" />
   </div>
 </template>
 
@@ -27,7 +27,6 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale,
 export default {
   components: {
     LineChart: Line
-    // LineChart: Bar
   },
   props: {
     id: {
@@ -59,30 +58,7 @@ export default {
     }
   },
   data() {
-    const datasets = [
-      {
-        label: this.y1,
-        data: this.store.datums[this.y1Prop],
-        borderColor: 'red',
-        // backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5),
-        yAxisID: 'y1'
-      },
-      {
-        label: this.y2,
-        data: this.store.datums[this.y2Prop],
-        borderColor: 'blue',
-        // backgroundColor: Utils.transparentize(Utils.CHART_COLORS.blue, 0.5),
-        yAxisID: 'y2'
-      }
-    ]
-
-    const labels = this.store.labels[this.y1Prop]
-
     return {
-      chartData: {
-        datasets,
-        labels
-      },
       chartOptions: {
         responsive: true,
         maintainAspectRatio: false,
@@ -111,6 +87,27 @@ export default {
           }
         }
       }
+    }
+  },
+  computed: {
+    datasets() {
+      return [
+        {
+          label: this.y1,
+          data: this.store.datums[this.y1Prop],
+          borderColor: 'red',
+          yAxisID: 'y1'
+        },
+        {
+          label: this.y2,
+          data: this.store.datums[this.y2Prop],
+          borderColor: 'blue',
+          yAxisID: 'y2'
+        }
+      ]
+    },
+    labels() {
+      return this.store.labels[this.y1Prop]
     }
   }
 }

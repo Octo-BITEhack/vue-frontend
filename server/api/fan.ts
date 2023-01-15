@@ -16,7 +16,7 @@ export default defineEventHandler(async (e): Promise<ResponseError | ResponseBas
     }
   }
 
-  if (!process.env.SERVER_URL) {
+  if (!process.env.API_URL) {
     return {
       status: 500,
       ok: false,
@@ -43,7 +43,7 @@ export default defineEventHandler(async (e): Promise<ResponseError | ResponseBas
   }
 
   const token = headers.authorization.split(' ')[1]
-  const { mode } = await readBody<{ mode: boolean }>(e)
+  const { isFanOn } = await readBody<{ isFanOn: boolean }>(e)
 
   try {
     const decoded = verify(token, process.env.JWT_SECRET)
@@ -64,16 +64,17 @@ export default defineEventHandler(async (e): Promise<ResponseError | ResponseBas
       }
     }
 
-    const response = await axios.post(`${process.env.SERVER_URL}/fan`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: {
-        mode
+    const response = await axios.post(
+      `${process.env.API_URL}/fan`,
+      { isFanOn },
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
       }
-    })
+    )
 
     if (response.status !== 200) {
       return {
@@ -89,6 +90,8 @@ export default defineEventHandler(async (e): Promise<ResponseError | ResponseBas
       body: {}
     }
   } catch (error) {
+    // console.error(error)
+
     return {
       status: 500,
       ok: false,

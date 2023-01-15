@@ -6,7 +6,7 @@ export const useUserStore = defineStore('user-store', () => {
   const token = ref<string>('')
   const isHelmetClosed = ref<boolean>(false)
   const isBeerBeingDrank = ref<boolean>(false)
-  const isFanOff = ref<boolean>(true)
+  const isFanOn = ref<boolean>(false)
 
   async function login(username: string, password: string): Promise<boolean> {
     const response = await $fetch('/api/login', {
@@ -34,28 +34,49 @@ export const useUserStore = defineStore('user-store', () => {
   async function toggleHelmet() {
     isHelmetClosed.value = !isHelmetClosed.value
 
-    await $fetch('/api/helmet', {
+    const response = await $fetch('/api/helmet', {
       method: 'POST',
-      body: { isHelmetClosed: isHelmetClosed.value }
+      body: { isHelmetClosed: isHelmetClosed.value },
+      headers: {
+        authorization: `Bearer ${getToken()}`
+      }
     })
+
+    if (!response.ok) {
+      isHelmetClosed.value = !isHelmetClosed.value
+    }
   }
 
   async function toggleFan() {
-    isFanOff.value = !isFanOff.value
+    isFanOn.value = !isFanOn.value
 
-    await $fetch('/api/fan', {
+    const response = await $fetch('/api/fan', {
       method: 'POST',
-      body: { isFanOff: isFanOff.value }
+      body: { isFanOn: isFanOn.value },
+      headers: {
+        authorization: `Bearer ${getToken()}`
+      }
     })
+
+    if (!response.ok) {
+      isFanOn.value = !isFanOn.value
+    }
   }
 
   async function setBeerDrinking(newIsBeerBeingDrank: boolean) {
     isBeerBeingDrank.value = newIsBeerBeingDrank
 
-    await $fetch('/api/beer', {
+    const response = await $fetch('/api/beer', {
       method: 'POST',
-      body: { isBeerBeingDrank: isBeerBeingDrank.value }
+      body: { isBeerBeingDrank: isBeerBeingDrank.value },
+      headers: {
+        authorization: `Bearer ${getToken()}`
+      }
     })
+
+    if (!response.ok) {
+      isBeerBeingDrank.value = !isBeerBeingDrank.value
+    }
   }
 
   function setToken(newToken: string) {
@@ -70,6 +91,7 @@ export const useUserStore = defineStore('user-store', () => {
     name,
     isHelmetClosed,
     isBeerBeingDrank,
+    isFanOn,
     login,
     logout,
     toggleHelmet,

@@ -16,7 +16,7 @@ export default defineEventHandler(async (e): Promise<ResponseError | ResponseBas
     }
   }
 
-  if (!process.env.SERVER_URL) {
+  if (!process.env.API_URL) {
     return {
       status: 500,
       ok: false,
@@ -63,7 +63,7 @@ export default defineEventHandler(async (e): Promise<ResponseError | ResponseBas
       }
     }
 
-    const response = await axios.get(`${process.env.SERVER_URL}/stats`, {
+    const response = await axios.get(`${process.env.API_URL}/stats`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -82,9 +82,13 @@ export default defineEventHandler(async (e): Promise<ResponseError | ResponseBas
     return {
       status: 200,
       ok: true,
-      body: {}
+      body: {
+        ...response.data
+      }
     }
   } catch (error) {
+    console.error(error)
+
     return {
       status: 500,
       ok: false,

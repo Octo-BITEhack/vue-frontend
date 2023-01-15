@@ -7,13 +7,18 @@
     </lazy-client-only>
     <div>
       <span class="lg:w-52 block">
-        {{ text }}: <strong>{{ unit ? value : value ? 'tak' : 'nie' }} {{ unit }}</strong>
+        {{ text }}:
+        <strong
+          >{{ unit ? statsStore.data.at(-1)![prop] : statsStore.data.at(-1)![prop] ? 'tak' : 'nie' }} {{ unit }}</strong
+        >
       </span>
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import { useStatsStore } from '~~/store/stats.store'
+
 export default {
   name: 'DataCard',
   props: {
@@ -21,8 +26,8 @@ export default {
       type: String,
       required: true
     },
-    value: {
-      type: Number || String,
+    prop: {
+      type: String,
       required: true
     },
     text: {
@@ -42,11 +47,23 @@ export default {
       required: true
     }
   },
+  setup() {
+    const statsStore = useStatsStore()
+
+    return {
+      statsStore
+    }
+  },
   computed: {
     computedColor() {
-      return (this.maxValue && this.value >= this.maxValue) || (this.minValue && this.value <= this.minValue)
-        ? 'bg-red-500'
-        : 'bg-green-500'
+      const val = this.statsStore.data.at(-1)
+
+      if (!val) return 'bg-gray-500'
+
+      if (this.maxValue !== undefined && val[this.prop] >= this.maxValue) return 'bg-red-500'
+      if (this.minValue !== undefined && val[this.prop] <= this.minValue) return 'bg-red-500'
+
+      return 'bg-green-500'
     }
   }
 }

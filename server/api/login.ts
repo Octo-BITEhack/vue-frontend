@@ -56,6 +56,8 @@ export default defineEventHandler(async (e): Promise<ResponseError | ResponseTok
       }
     }
   } catch (error) {
+    console.error(error)
+
     return {
       status: 500,
       ok: false,

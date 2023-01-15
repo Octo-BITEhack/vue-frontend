@@ -21,31 +21,32 @@ export default {
       data: [
         {
           id: 0,
+          prop: 'pulse',
           image: 'puls',
           text: 'Puls',
-          value: 100,
-          maxValue: 120,
+          minValue: 60,
+          maxValue: 140,
           unit: 'bpm'
         },
         {
           id: 1,
+          prop: 'isLight',
           image: 'jasnosc',
           text: 'Jest jasno?',
-          value: 1,
           minValue: 0
         },
         {
           id: 2,
+          prop: 'isNoise',
           image: 'glosnosc',
           text: 'Jest głośno?',
-          value: 1,
           maxValue: 1
         },
         {
           id: 3,
+          prop: 'saturation',
           image: 'natlenienie',
-          text: 'Natlenienie',
-          value: 100,
+          text: 'Saturacja',
           minValue: 80,
           unit: '%'
         }
@@ -75,7 +76,7 @@ export default {
           value: { username, password },
           isConfirmed
         } = await this.$swal.fire({
-          title: 'Podaj swoje imię',
+          title: 'Zaloguj się do systemu',
           icon: 'info',
           html:
             '<input type="text" id="swal-input1" name="swal-input1" class="swal2-input" placeholder="Nazwa użytkownika..." required />' +
@@ -136,8 +137,6 @@ export default {
     })
 
     this.interval = setInterval(async () => {
-      console.info('Fetching stats...')
-
       try {
         const stats = await this.statsStore.fetchStats()
 
@@ -154,26 +153,26 @@ export default {
 
         // location.reload()
       }
-    }, 3000)
+    }, 1000)
   },
   beforeUnmount() {
     this.userStore.logout()
   },
   methods: {
-    onHelmetButtonClick() {
-      this.userStore.toggleHelmet()
+    async onHelmetButtonClick() {
+      await this.userStore.toggleHelmet()
     },
-    onFanButtonClick() {
-      this.userStore.toggleFan()
+    async onFanButtonClick() {
+      await this.userStore.toggleFan()
     },
-    onBeerButtonTouchDown() {
-      this.userStore.setBeerDrinking(true)
+    async onBeerButtonTouchDown() {
+      await this.userStore.setBeerDrinking(true)
     },
-    onBeerButtonTouchUp() {
-      this.userStore.setBeerDrinking(false)
+    async onBeerButtonTouchUp() {
+      await this.userStore.setBeerDrinking(false)
     },
-    toggleBeer() {
-      this.userStore.toggleBeer()
+    async toggleBeer() {
+      await this.userStore.toggleBeer()
     }
   }
 }
@@ -182,9 +181,9 @@ export default {
 <template>
   <div class="container mx-auto flex items-center justify-center flex-col">
     <h1 class="text-5xl font-bold mt-4 mb-4 underline">
-      {{ userStore.name ? `Witaj, ${userStore.name}!` : 'Aby kontynuować, podaj swoje imię' }}
+      {{ userStore.name ? `Witaj, ${userStore.name}!` : 'Aby kontynuować, zaloguj się' }}
     </h1>
-    <div v-if="userStore.name" class="container flex flex-wrap lg:flex-row p-4">
+    <div v-if="userStore.name && statsStore.data.length > 0" class="container flex flex-wrap lg:flex-row p-4">
       <div class="w-full lg:w-1/3 mb-4 lg:pr-6">
         <h2 class="hidden text-2xl w-full mb-3 lg:block">Sterowanie</h2>
         <div class="flex flex-col gap-3">
@@ -207,7 +206,7 @@ export default {
             class="bg-sky-500 hover:bg-sky-700 text-white font-bold py-4 px-8 rounded-lg text-4xl lg:py-2 lg:px-4 lg:text-lg"
             @click="onFanButtonClick"
           >
-            {{ userStore.isFanOff ? 'Włącz' : 'Wyłącz' }} wiatrak
+            {{ userStore.isFanOn ? 'Wyłącz' : 'Włącz' }} wiatrak
           </button>
         </div>
       </div>
@@ -219,10 +218,10 @@ export default {
           :key="record.id"
           :image="record.image"
           :text="record.text"
-          :value="record.value"
           :unit="record.unit || ''"
-          :max-value="record.maxValue || NaN"
-          :min-value="record.minValue || NaN"
+          :max-value="record.maxValue === undefined ? NaN : +record.maxValue"
+          :min-value="record.minValue === undefined ? NaN : +record.minValue"
+          :prop="record.prop"
         />
       </div>
       <hr class="w-full mt-6 lg:mt-8" />
