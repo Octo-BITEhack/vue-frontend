@@ -158,7 +158,7 @@ export default {
           :color="color"
         />
       </div>
-      <h2 class="hidden text-2xl w-full mt-10 lg:block">Potrzebujesz pomocy?</h2>
+      <h2 class="hidden text-2xl w-full mt-10 lg:block">Znalazłeś się w ekstremalnej sytuacji?</h2>
       <alarm-numbers v-for="mobile in mobiles" :key="mobile" :mobile="mobile" :value="value" />
     </div>
   </div>
