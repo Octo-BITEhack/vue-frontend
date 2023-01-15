@@ -1,4 +1,5 @@
 <script>
+import AlarmNumbers from '@/components/AlarmNumbers.vue'
 import DataCard from '@/components/DataCard.vue'
 import { useUserStore } from '@/store/user.store'
 
@@ -17,7 +18,8 @@ export default {
       value: 100,
       maxValue: 120,
       color: 'bg-blue-400',
-      unit: ''
+      unit: '',
+      mobiles: ['999 - Pogotowie', '997 - Policja', '998 - Straż pożarna']
     }
   },
   head() {
@@ -123,7 +125,7 @@ export default {
     <h1 class="text-5xl font-bold mt-4 mb-4 underline">
       {{ store.name ? `Witaj, ${store.name}!` : 'Aby kontynuować, podaj swoje imię' }}
     </h1>
-    <div v-show="store.name" class="container flex flex-col lg:flex-row p-4">
+    <div v-show="store.name" class="container flex flex-wrap lg:flex-row p-4">
       <div class="w-full lg:w-1/3 mb-4 lg:pr-6">
         <h2 class="hidden text-2xl w-full mb-3 lg:block">Sterowanie</h2>
         <div class="flex flex-col gap-3">
@@ -156,6 +158,8 @@ export default {
           :color="color"
         />
       </div>
+      <h2 class="hidden text-2xl w-full mt-10 lg:block">Potrzebujesz pomocy?</h2>
+      <alarm-numbers v-for="mobile in mobiles" :key="mobile" :mobile="mobile" :value="value" />
     </div>
   </div>
 </template>
