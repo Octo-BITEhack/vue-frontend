@@ -1,11 +1,12 @@
 <script>
 import AlarmNumbers from '@/components/AlarmNumbers.vue'
+import ChartComponent from '@/components/ChartComponent.vue'
 import DataCard from '@/components/DataCard.vue'
 import { useStatsStore } from '@/store/stats.store'
 import { useUserStore } from '@/store/user.store'
 
 export default {
-  components: { DataCard, AlarmNumbers },
+  components: { DataCard, AlarmNumbers, ChartComponent },
   setup() {
     const statsStore = useStatsStore()
     const userStore = useUserStore()
@@ -24,7 +25,7 @@ export default {
           text: 'Puls',
           value: 100,
           maxValue: 120,
-          unit: 'ud./min'
+          unit: 'bpm'
         },
         {
           id: 1,
@@ -162,6 +163,9 @@ export default {
     onHelmetButtonClick() {
       this.userStore.toggleHelmet()
     },
+    onFanButtonClick() {
+      this.userStore.toggleFan()
+    },
     onBeerButtonTouchDown() {
       this.userStore.setBeerDrinking(true)
     },
@@ -180,7 +184,7 @@ export default {
     <h1 class="text-5xl font-bold mt-4 mb-4 underline">
       {{ userStore.name ? `Witaj, ${userStore.name}!` : 'Aby kontynuować, podaj swoje imię' }}
     </h1>
-    <div v-show="userStore.name" class="container flex flex-wrap lg:flex-row p-4">
+    <div v-if="userStore.name" class="container flex flex-wrap lg:flex-row p-4">
       <div class="w-full lg:w-1/3 mb-4 lg:pr-6">
         <h2 class="hidden text-2xl w-full mb-3 lg:block">Sterowanie</h2>
         <div class="flex flex-col gap-3">
@@ -198,6 +202,12 @@ export default {
             @mouseup="onBeerButtonTouchUp"
           >
             {{ userStore.isBeerBeingDrank ? 'Puść, aby przestać pić' : 'Pij piwo' }}
+          </button>
+          <button
+            class="bg-sky-500 hover:bg-sky-700 text-white font-bold py-4 px-8 rounded-lg text-4xl lg:py-2 lg:px-4 lg:text-lg"
+            @click="onFanButtonClick"
+          >
+            {{ userStore.isFanOff ? 'Włącz' : 'Wyłącz' }} wiatrak
           </button>
         </div>
       </div>
@@ -218,6 +228,18 @@ export default {
       <hr class="w-full mt-6 lg:mt-8" />
       <h2 class="hidden text-2xl w-full mt-4 lg:mt-8 lg:block">Znalazłeś się w ekstremalnej sytuacji?</h2>
       <alarm-numbers v-for="mobile in mobiles" :key="mobile" :mobile="mobile" />
+
+      <hr class="w-full mt-6 lg:mt-8" />
+      <div class="w-full mt-6 lg:mt-8 flex flex-col flex-wrap gap-4 justify-between lg:flex-row">
+        <chart-component
+          id="pulse-saturation"
+          y1="Tętno [bpm]"
+          y2="Saturacja SpO2 [%]"
+          y1-prop="pulse"
+          y2-prop="saturation"
+        />
+        <chart-component id="noise-dim" y1="Jasność" y2="Hałas" y1-prop="isNoise" y2-prop="isLight" />
+      </div>
     </div>
   </div>
 </template>

@@ -6,6 +6,7 @@ export const useUserStore = defineStore('user-store', () => {
   const token = ref<string>('')
   const isHelmetClosed = ref<boolean>(false)
   const isBeerBeingDrank = ref<boolean>(false)
+  const isFanOff = ref<boolean>(true)
 
   async function login(username: string, password: string): Promise<boolean> {
     const response = await $fetch('/api/login', {
@@ -30,12 +31,31 @@ export const useUserStore = defineStore('user-store', () => {
     name.value = newName
   }
 
-  function toggleHelmet() {
+  async function toggleHelmet() {
     isHelmetClosed.value = !isHelmetClosed.value
+
+    await $fetch('/api/helmet', {
+      method: 'POST',
+      body: { isHelmetClosed: isHelmetClosed.value }
+    })
   }
 
-  function setBeerDrinking(newIsBeerBeingDrank: boolean) {
+  async function toggleFan() {
+    isFanOff.value = !isFanOff.value
+
+    await $fetch('/api/fan', {
+      method: 'POST',
+      body: { isFanOff: isFanOff.value }
+    })
+  }
+
+  async function setBeerDrinking(newIsBeerBeingDrank: boolean) {
     isBeerBeingDrank.value = newIsBeerBeingDrank
+
+    await $fetch('/api/beer', {
+      method: 'POST',
+      body: { isBeerBeingDrank: isBeerBeingDrank.value }
+    })
   }
 
   function setToken(newToken: string) {
@@ -53,6 +73,7 @@ export const useUserStore = defineStore('user-store', () => {
     login,
     logout,
     toggleHelmet,
+    toggleFan,
     setBeerDrinking,
     getToken
   }

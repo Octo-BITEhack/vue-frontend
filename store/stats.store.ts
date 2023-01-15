@@ -4,12 +4,20 @@ import { ref } from 'vue'
 import { useUserStore } from '@/store/user.store'
 import { ResponseStats } from '~~/@types/responses'
 import { Stats } from '~~/@types/stats'
+import getDatumAndLabelFromStat from '~~/functions/getDatumAndLabelFromStat'
 
 export const useStatsStore = defineStore('stats-store', () => {
-  const pulse = ref<number>(0)
-  const saturation = ref<number>(0)
-  const isNoise = ref<boolean>(false)
-  const isLight = ref<boolean>(true)
+  const data = ref<(Stats & { timestamp: Date })[]>([
+    // {
+    //   pulse: 0,
+    //   saturation: 0,
+    //   isNoise: false,
+    //   isLight: false,
+    //   timestamp: new Date()
+    // }
+  ])
+  const labels = ref<{ [key: keyof Stats]: Date[] }>({})
+  const datums = ref<{ [key: keyof Stats]: string[] }>({})
 
   async function fetchStats(): Promise<Stats | Error> {
     const userStore = useUserStore()
@@ -25,17 +33,42 @@ export const useStatsStore = defineStore('stats-store', () => {
       return new Error(response.body.error)
     }
 
-    const data = (response as ResponseStats).body
+    const { body } = response as ResponseStats
 
-    pulse.value = data.pulse
-    saturation.value = data.saturation
-    isNoise.value = data.isNoise
-    isLight.value = data.isLight
+    appendStats({ ...body, timestamp: new Date() } as Stats & { timestamp: Date })
 
-    return { ...(response as ResponseStats).body }
+    return { ...body }
+  }
+
+  function appendStats(stats: Stats & { timestamp: Date }): void {
+    data.value.pop()
+    data.value.push(stats)
+    createLabelsAndDatums()
+  }
+
+  function createLabelsAndDatums(): void {
+    for (const value of data.value) {
+      for (const key in value) {
+        if (key === 'timestamp') {
+          continue
+        }
+
+        if (!labels.value[key]) {
+          labels.value[key] = []
+          datums.value[key] = []
+        }
+
+        const { x, y } = getDatumAndLabelFromStat(value, key as keyof Stats)
+
+        labels.value[key].push(y)
+        datums.value[key].push(x)
+      }
+    }
   }
 
   return {
+    labels,
+    datums,
     fetchStats
   }
 })

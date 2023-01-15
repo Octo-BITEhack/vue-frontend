@@ -1,5 +1,5 @@
 export interface Stats {
-  [key: string]: string | number | boolean
+  [key: string]: any
 
   pulse: number
   saturation: number
