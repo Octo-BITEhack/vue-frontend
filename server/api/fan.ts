@@ -90,7 +90,7 @@ export default defineEventHandler(async (e): Promise<ResponseError | ResponseBas
       body: {}
     }
   } catch (error) {
-    // console.error(error)
+    console.error(error)
 
     return {
       status: 500,

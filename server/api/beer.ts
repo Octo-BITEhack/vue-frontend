@@ -76,8 +76,6 @@ export default defineEventHandler(async (e): Promise<ResponseError | ResponseBas
       }
     )
 
-    console.debug(response.status, isBeerBeingDrank)
-
     if (response.status !== 200) {
       return {
         status: 500,

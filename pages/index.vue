@@ -187,12 +187,12 @@ export default {
       <div class="w-full lg:w-1/3 mb-4 lg:pr-6">
         <h2 class="hidden text-2xl w-full mb-3 lg:block">Sterowanie</h2>
         <div class="flex flex-col gap-3">
-          <button
+          <!-- <button
             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg text-4xl lg:py-2 lg:px-4 lg:text-lg"
             @click="onHelmetButtonClick"
           >
             {{ userStore.isHelmetClosed ? 'Otwórz' : 'Zamknij' }} hełm
-          </button>
+          </button> -->
           <button
             class="bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-4 px-8 rounded-lg text-4xl lg:py-2 lg:px-4 lg:text-lg"
             @touchstart="onBeerButtonTouchDown"
@@ -200,7 +200,7 @@ export default {
             @mousedown="onBeerButtonTouchDown"
             @mouseup="onBeerButtonTouchUp"
           >
-            {{ userStore.isBeerBeingDrank ? 'Puść, aby przestać pić' : 'Pij piwo' }}
+            {{ userStore.isBeerBeingDrank ? 'Puść, aby przestać pić' : 'Pij wodę, będziesz wielki!' }}
           </button>
           <button
             class="bg-sky-500 hover:bg-sky-700 text-white font-bold py-4 px-8 rounded-lg text-4xl lg:py-2 lg:px-4 lg:text-lg"
